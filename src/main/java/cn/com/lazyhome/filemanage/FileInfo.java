@@ -42,6 +42,24 @@ public class FileInfo {
 	private Date createTime;
 	private long modifyTime;
 	private Date lastAnalyzeTime;
+	
+	private Date begintime;
+	private Date endtime;
+	public Date getBegintime() {
+		return begintime;
+	}
+
+	public void setBegintime(Date begintime) {
+		this.begintime = begintime;
+	}
+
+	public Date getEndtime() {
+		return endtime;
+	}
+
+	public void setEndtime(Date endtime) {
+		this.endtime = endtime;
+	}
 	/**
 	 * 分析耗时，单位毫秒
 	 */

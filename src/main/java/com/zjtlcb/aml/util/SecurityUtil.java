@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,6 +69,8 @@ public class SecurityUtil {
 			
 			fInfo.setMd5( bi.toString(16) );
 			fInfo.setAnnalyzeUse(end - now);
+			fInfo.setBegintime(new Date(now));
+			fInfo.setEndtime(new Date(end));
 		} catch (FileNotFoundException e) {
 			logger.warn("文件不存在", e);
 		} catch (IOException e) {

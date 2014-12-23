@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Vector;
 
@@ -161,7 +162,7 @@ public class FileManager {
 		// TODO 保存信息到数据库
 		UtilFactory factory = UtilFactory.getInstance();
 		try {
-			String sql = "insert into FILEMANAGE(filepath, md5, filesize, usetime) values(?, ?, ?, ?)";
+			String sql = "insert into FILEMANAGE(filepath, md5, filesize, usetime,begintime, endtime, recordtime) values(?, ?, ?, ?, ?, ?, ?)";
 			
 			Connection conn = factory.getConnection();
 			PreparedStatement prestmt = conn.prepareStatement(sql);
@@ -171,6 +172,9 @@ public class FileManager {
 			prestmt.setString(parameterIndex++, fInfo.getMd5());
 			prestmt.setLong(parameterIndex++, fInfo.getSize());
 			prestmt.setLong(parameterIndex++, fInfo.getAnnalyzeUse());
+			prestmt.setTimestamp(parameterIndex++, new Timestamp(fInfo.getBegintime().getTime()) );
+			prestmt.setTimestamp(parameterIndex++, new Timestamp(fInfo.getEndtime().getTime()) );
+			prestmt.setTimestamp(parameterIndex++, new Timestamp(System.currentTimeMillis()) );
 			prestmt.execute();
 			prestmt.close();
 			
