@@ -39,4 +39,37 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<archive>
+						<!-- manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile -->
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<!-- 定义classpath前缀，Defining a Classpath Directory Prefix -->
+							<classpathPrefix>dependency</classpathPrefix>
+							<!-- 使用maven库的目录结构，use a Maven Repository-style -->
+							<!-- classpathLayoutType>repository</classpathLayoutType -->
+							<mainClass>cn.com.lazyhome.filemanage.TestMain</mainClass>
+						</manifest>
+						<manifestEntries>
+							<!-- 可以把以下的路径加到（append）系统自动生成的classpath下 -->
+							<Class-Path>.</Class-Path>
+						</manifestEntries>
+					</archive>
+					<!-- 排除配置文件，相对于打包后的jar路径 -->
+					<excludes>
+						<!-- 不能用逗号（，）分隔 -->
+						<exclude>log4j.properties</exclude>
+						<exclude>config.properties</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+		<defaultGoal>clean package dependency:copy-dependencies</defaultGoal>
+	</build>
 </project>

@@ -53,6 +53,9 @@ public class FileManager {
 	 */
 	private List<FileInfo> ananlyze(File path) {
 		SecurityUtil util = new SecurityUtil();
+		if(logger.isTraceEnabled()) {
+			logger.trace("分析文件：" + path.toString());
+		}
 		
 		Vector<FileInfo> vector = new Vector<FileInfo>();
 		

@@ -9,7 +9,12 @@ public class TestMain {
 		
 //		String basedir = "J:\\kuaipan\\60-soft";
 //		String basedir = "J:\\kuaipan";
-		String basedir = "G:\\迅雷下载";
-		manager.ananlyze(basedir);
+//		String basedir = "G:\\迅雷下载";
+		if(args.length ==0 ) {
+			System.out.print("please add a string as ananlyzed basedir.");
+		} else {
+			String basedir = args[0];
+			manager.ananlyze(basedir);
+		}
 	}
 }

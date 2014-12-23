@@ -3,3 +3,5 @@
 target
 .classpath
 .project
+error.log
+detail.log
