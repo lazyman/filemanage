@@ -61,6 +61,11 @@ public class UtilFactory {
 			String dbusername = config.getProperty("db.username");
 			String dbpassword = config.getProperty("db.password");
 			
+			logger.debug(dbdriver);
+			logger.debug(dburl);
+			logger.debug(dbusername);
+			logger.debug(dbpassword);
+			
 			dbUtil = getDbUtil(dbdriver, dburl, dbusername, dbpassword);
 		}
 		

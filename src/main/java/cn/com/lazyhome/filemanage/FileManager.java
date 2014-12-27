@@ -11,8 +11,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Vector;
 
-import javax.xml.parsers.FactoryConfigurationError;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -90,7 +88,7 @@ public class FileManager {
 		boolean analyzed = false;
 		
 		try {
-			String sql = "select * from FILEMANAGE where filepath = ?";
+			String sql = "select * from filemanage where filepath = ?";
 			
 			Connection conn = factory.getConnection();
 			PreparedStatement prestmt = conn.prepareStatement(sql);
@@ -162,7 +160,7 @@ public class FileManager {
 		// TODO 保存信息到数据库
 		UtilFactory factory = UtilFactory.getInstance();
 		try {
-			String sql = "insert into FILEMANAGE(filepath, md5, filesize, usetime,begintime, endtime, recordtime) values(?, ?, ?, ?, ?, ?, ?)";
+			String sql = "insert into filemanage(filepath, md5, filesize, usetime,begintime, endtime, recordtime) values(?, ?, ?, ?, ?, ?, ?)";
 			
 			Connection conn = factory.getConnection();
 			PreparedStatement prestmt = conn.prepareStatement(sql);
