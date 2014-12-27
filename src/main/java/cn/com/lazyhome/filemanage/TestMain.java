@@ -12,7 +12,13 @@ public class TestMain {
 //		String basedir = "G:\\迅雷下载";
 		if(args.length ==0 ) {
 			System.out.print("please add a string as ananlyzed basedir.");
+		} else if(args.length == 2){
+			// 展示当前目录的文件
+			String basedir = args[0];
+			
+			manager.showList(basedir);
 		} else {
+			// 计算指定目录下的md5
 			String basedir = args[0];
 			manager.ananlyze(basedir);
 		}

@@ -77,6 +77,21 @@ public class FileManager {
 		return vector;
 	}
 
+	public void showList(String basedir) {
+		File path = new File(basedir);
+		
+		if(path.isFile()) {
+			String filepath = path.getAbsolutePath();
+			
+			logger.info(filepath);
+		} else {
+			File[] dirs = path.listFiles();
+			
+			for(int i=0; i<dirs.length; i++) {
+				logger.info(dirs[i]);
+			}
+		}
+	}
 	/**
 	 * 检查是否已经分析过
 	 * @param filepath
