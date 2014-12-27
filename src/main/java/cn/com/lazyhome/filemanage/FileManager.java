@@ -205,4 +205,9 @@ public class FileManager {
 	public void setRecordType(int recordType) {
 		this.recordType = recordType;
 	}
+
+	public void parse(String configfile) {
+		// TODO 根据指定配置文件执行分析操作，主要用于排除一些文件、目录
+		System.out.println("it does not implement!");
+	}
 }
