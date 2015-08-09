@@ -9,3 +9,7 @@ CREATE TABLE `filemanage` (
   `recordTime` datetime DEFAULT NULL COMMENT '记录时间（最终分析时间）',
   PRIMARY KEY (`Id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=16475 DEFAULT CHARSET=utf8
+
+ALTER TABLE `filemanage`
+ADD COLUMN `lastModified`  bigint NULL AFTER `recordTime`;
+

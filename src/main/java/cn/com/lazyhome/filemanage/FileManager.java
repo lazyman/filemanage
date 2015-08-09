@@ -72,7 +72,7 @@ public class FileManager {
 			fileInfo.setBasePath(basedir, fullPath);
 			String filepath = fileInfo.getPath();
 			
-			if(!hasAnalyzed(filepath)) {
+			if(!hasAnalyzed(filepath, fullPath)) {
 				FileInfo fInfo = util.getMd5Digest(fullPath);
 				fInfo.setBasePath(basedir, fullPath);
 				
@@ -112,11 +112,12 @@ public class FileManager {
 		}
 	}
 	/**
-	 * 检查是否已经分析过
-	 * @param filepath
-	 * @return
+	 * 检查是否已经分析过：1.没分析的，2.已过期的。两种情况都认为是未分析。分析后未过期的，肯定存在记录，并且lastModified是最新的，也就是相等。
+	 * @param filepath 相对文件路径
+	 * @param file 文件对象，用于取lastModified
+	 * @return 是否已经分析过或者是否过期
 	 */
-	private boolean hasAnalyzed(String filepath) {
+	private boolean hasAnalyzed(String filepath, File file) {
 		// TODO 检查是否已经分析过
 		
 		switch (recordType) {
@@ -137,13 +138,17 @@ public class FileManager {
 		boolean analyzed = false;
 		
 		try {
-			String sql = "select * from filemanage where filepath = ?";
+			// 路径相同，分析时的lastModified比现在的lastModified小，说明分析后经过了修改，记录已过期得重新分析。
+			// 实际不可能出现出现分析时的lastModified比现在的lastModified大，最多相等
+			String sql = "select * from filemanage where filepath = ? and lastModified = ?";
 			
 			Connection conn = factory.getConnection();
 			PreparedStatement prestmt = conn.prepareStatement(sql);
 			
 			int parameterIndex=1;
 			prestmt.setString(parameterIndex++, filepath);
+			prestmt.setTimestamp(parameterIndex++, new Timestamp(file.lastModified()));
+			
 			ResultSet rs = prestmt.executeQuery();
 			if(rs.next()) {
 				analyzed = true;
@@ -213,7 +218,7 @@ public class FileManager {
 		// TODO 保存信息到数据库
 		UtilFactory factory = UtilFactory.getInstance();
 		try {
-			String sql = "insert into filemanage(filepath, md5, filesize, usetime,begintime, endtime, recordtime) values(?, ?, ?, ?, ?, ?, ?)";
+			String sql = "insert into filemanage(filepath, md5, filesize, usetime,begintime, endtime, recordtime, lastModified) values(?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			Connection conn = factory.getConnection();
 			PreparedStatement prestmt = conn.prepareStatement(sql);
@@ -226,6 +231,7 @@ public class FileManager {
 			prestmt.setTimestamp(parameterIndex++, new Timestamp(fInfo.getBegintime().getTime()) );
 			prestmt.setTimestamp(parameterIndex++, new Timestamp(fInfo.getEndtime().getTime()) );
 			prestmt.setTimestamp(parameterIndex++, new Timestamp(System.currentTimeMillis()) );
+			prestmt.setTimestamp(parameterIndex++, new Timestamp(fInfo.getFile().lastModified()));
 			prestmt.execute();
 			prestmt.close();
 			
@@ -233,7 +239,6 @@ public class FileManager {
 		} catch (SQLException e) {
 			logger.error("记录统计数据", e);
 		}
-		
 	}
 
 	public int getRecordType() {
