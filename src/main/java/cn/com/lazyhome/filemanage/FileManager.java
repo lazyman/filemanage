@@ -49,7 +49,7 @@ public class FileManager {
 //			}
 //		}
 		
-		logger.info("分析程序结束，文件总数量：" + list.size());
+		logger.info("分析程序结束，经过分析的文件数量：" + list.size());
 	}
 	
 	/**
@@ -58,7 +58,7 @@ public class FileManager {
 	 * @param path
 	 * @return 
 	 */
-	private List<FileInfo> ananlyze(String basedir, File fullPath) {
+	public List<FileInfo> ananlyze(String basedir, File fullPath) {
 		SecurityUtil util = new SecurityUtil();
 		if(logger.isTraceEnabled()) {
 			logger.trace("分析文件：" + fullPath.toString());
@@ -258,7 +258,7 @@ public class FileManager {
 
 //		manager.setRecordType(FileManager.RECORD_TYPE_FILE);
 		manager.setRecordType(FileManager.RECORD_TYPE_DB);
-		manager.setRecordType(FileManager.RECORD_TYPE_MEMERY);
+//		manager.setRecordType(FileManager.RECORD_TYPE_MEMERY);
 		
 //		String basedir = "J:\\kuaipan\\60-soft";
 //		String basedir = "J:\\kuaipan";
