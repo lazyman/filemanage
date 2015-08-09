@@ -109,4 +109,15 @@ public class UtilFactory {
 		logger.debug("获取数据库连接");
 		return getDbUtil().getConnection();
 	}
+	
+	public static void main(String[] args) {
+		UtilFactory factory = UtilFactory.getInstance();
+		try {
+			Connection conn = factory.getConnection();
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			logger.error("UtilFactory.main SQLException", e);
+			e.printStackTrace();
+		}
+	}
 }
