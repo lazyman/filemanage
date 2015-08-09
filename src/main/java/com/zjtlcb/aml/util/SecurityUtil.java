@@ -39,7 +39,7 @@ public class SecurityUtil {
 		FileInfo fInfo = new FileInfo();
 		fInfo.setFile(file);
 		// 文件基本信息
-		fInfo.setFullName(file.getAbsolutePath());
+		fInfo.setFullPath(file.getAbsolutePath());
 		fInfo.setModifyTime(file.lastModified());
 		
 		try {

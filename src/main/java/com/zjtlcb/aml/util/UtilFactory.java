@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * 实例工厂，存放各种工具类，及系统配置信息。
+ * 实例工厂，存放各种工具类，及系统配置信息。默认读取配置文件config.properties
  * @author dch
  *
  */

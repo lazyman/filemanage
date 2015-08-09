@@ -5,28 +5,34 @@ import java.util.Date;
 
 /**
  * 文件信息。
- * fullName、baseName、size、md5、annalyzeUse必填
+ * fullPath、basePath、size、md5、annalyzeUse必填
+ * 如完整path是/d/1st/2nd/3rd.txt，基础路径是/d/1st/，则：
+ * fullPath = /d/1st/2nd/3rd.txt
+ * basePath = /d/1st/
+ * path = /2nd/3rd.txt
+ * name = 3rd.txt
  * @author dch
  *
  */
 public class FileInfo {
 	private File file;
+	
 	/**
-	 * 相对基础目录的名称，基于baseName之下是唯一的。第一个字符不是斜杠（“/”）
+	 * 相对基础目录的目录名称，基于baseName之下是唯一的。第一个字符不是斜杠（“/”）。
 	 */
-	private String name;
+	private String path;
 	/**
 	 * 基础路径（目录），以斜杠（“/”）结尾
 	 */
-	private String baseName;
+	private String basePath;
 	/**
 	 * 短名称
 	 */
-	private String simpleName;
+	private String name;
 	/**
-	 * 全路径。baseName + name
+	 * 全路径。basePath + path
 	 */
-	private String fullName;
+	private String fullPath;
 	/**
 	 * 文件大小，单位字节
 	 */
@@ -69,18 +75,15 @@ public class FileInfo {
 	
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
-
-		sb.append(size);
-		sb.append("\t");
-		sb.append(fullName);
-		sb.append("\n");
-		sb.append("\t");
-		sb.append(md5);
-		
-		// fullname
-		// >>size   md5
-		return sb.toString();
+		StringBuilder builder = new StringBuilder();
+		builder.append("FileInfo [fullPath=");
+		builder.append(fullPath);
+		builder.append(", size=");
+		builder.append(size);
+		builder.append(", md5=");
+		builder.append(md5);
+		builder.append("]");
+		return builder.toString();
 	}
 	
 	public File getFile() {
@@ -89,29 +92,29 @@ public class FileInfo {
 	public void setFile(File file) {
 		this.file = file;
 	}
+	public String getPath() {
+		return path;
+	}
+	public void setPath(String name) {
+		this.path = name;
+	}
+	public String getBasePath() {
+		return basePath;
+	}
+	public void setBasePath(String basePath) {
+		this.basePath = basePath;
+	}
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String simpleName) {
+		this.name = simpleName;
 	}
-	public String getBaseName() {
-		return baseName;
+	public String getFullPath() {
+		return fullPath;
 	}
-	public void setBaseName(String baseName) {
-		this.baseName = baseName;
-	}
-	public String getSimpleName() {
-		return simpleName;
-	}
-	public void setSimpleName(String simpleName) {
-		this.simpleName = simpleName;
-	}
-	public String getFullName() {
-		return fullName;
-	}
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
+	public void setFullPath(String fullName) {
+		this.fullPath = fullName;
 	}
 	public long getSize() {
 		return size;
@@ -166,6 +169,21 @@ public class FileInfo {
 	}
 	public void setMd5byte(byte[] md5byte) {
 		this.md5byte = md5byte;
+	}
+
+	/**
+	 * 根据基础路径和全路径得出短名称和相对名称。
+	 * @param basePath 基础路径
+	 * @param fullPathFile 全路径
+	 */
+	public void setBasePath(String basePath, File fullPathFile) {
+		this.file = fullPathFile;
+		
+		this.basePath = basePath;
+		this.fullPath = fullPathFile.getAbsolutePath();
+		
+		this.name = fullPathFile.getName();
+		this.path = this.fullPath.substring(basePath.length());
 	}
 
 }
