@@ -1,0 +1,81 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cn.com.lazyhome</groupId>
+	<artifactId>filemanage-core</artifactId>
+	<name>file manange</name>
+	<version>0.0.1-SNAPSHOT</version>
+	<repositories>
+		<repository>
+			<id>tl-nexus</id>
+			<url>http://127.0.0.1:8081/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>1.1.7</version>
+			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>jna</artifactId>
+					<groupId>net.java.dev.jna</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>provided</scope>
+			<version>1.3.175</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<archive>
+						<!-- manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile -->
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<!-- 定义classpath前缀，Defining a Classpath Directory Prefix -->
+							<classpathPrefix>dependency</classpathPrefix>
+							<!-- 使用maven库的目录结构，use a Maven Repository-style -->
+							<!-- classpathLayoutType>repository</classpathLayoutType -->
+							<mainClass>cn.com.lazyhome.filemanage.TestMain</mainClass>
+						</manifest>
+						<manifestEntries>
+							<!-- 可以把以下的路径加到（append）系统自动生成的classpath下 -->
+							<Class-Path>.</Class-Path>
+						</manifestEntries>
+					</archive>
+					<!-- 排除配置文件，相对于打包后的jar路径 -->
+					<excludes>
+						<!-- 不能用逗号（，）分隔 -->
+						<exclude>log4j.properties</exclude>
+						<exclude>config.properties</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+		<defaultGoal>clean package dependency:copy-dependencies</defaultGoal>
+	</build>
+</project>
