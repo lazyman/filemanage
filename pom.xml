@@ -8,4 +8,8 @@
   	<module>filemanage-core</module>
   	<module>filemanage-web</module>
   </modules>
+  <properties>
+  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <name>file manage</name>
 </project>

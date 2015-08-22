@@ -1,10 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>cn.com.lazyhome</groupId>
 	<artifactId>filemanage-core</artifactId>
-	<name>file manange</name>
-	<version>0.0.1-SNAPSHOT</version>
+	<name>file manange core</name>
 	<repositories>
 		<repository>
 			<id>tl-nexus</id>
@@ -78,4 +76,9 @@
 		</plugins>
 		<defaultGoal>clean package dependency:copy-dependencies</defaultGoal>
 	</build>
+	<parent>
+		<groupId>cn.com.lazyhome</groupId>
+		<artifactId>filemanage</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
 </project>
