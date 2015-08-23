@@ -79,13 +79,16 @@ public class FileManager {
 				record(fInfo);
 				filelist.add(fInfo);
 			}
-		} else {
+		} else if(fullPath.isDirectory()) {
 			// 递归分析子目录
+			logger.trace("path is directory");
 			File[] dirs = fullPath.listFiles();
 			
 			for(int i=0; i<dirs.length; i++) {
 				filelist.addAll(ananlyze(basedir, dirs[i]));
 			}
+		} else {
+			logger.warn("fullPath is not a file or directory:" + fullPath);
 		}
 		
 		return filelist;
@@ -218,7 +221,8 @@ public class FileManager {
 		// TODO 保存信息到数据库
 		UtilFactory factory = UtilFactory.getInstance();
 		try {
-			String sql = "insert into filemanage(filepath, md5, filesize, usetime,begintime, endtime, recordtime, lastModified) values(?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "insert into filemanage(filepath, md5, filesize, usetime,begintime, "
+					+ "endtime, recordtime, lastModified, fullpath, basePath) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			Connection conn = factory.getConnection();
 			PreparedStatement prestmt = conn.prepareStatement(sql);
@@ -232,6 +236,8 @@ public class FileManager {
 			prestmt.setTimestamp(parameterIndex++, new Timestamp(fInfo.getEndtime().getTime()) );
 			prestmt.setTimestamp(parameterIndex++, new Timestamp(System.currentTimeMillis()) );
 			prestmt.setTimestamp(parameterIndex++, new Timestamp(fInfo.getFile().lastModified()));
+			prestmt.setString(parameterIndex++, fInfo.getFullPath());
+			prestmt.setString(parameterIndex++, fInfo.getBasePath());
 			prestmt.execute();
 			prestmt.close();
 			
@@ -268,7 +274,10 @@ public class FileManager {
 //		String basedir = "J:\\kuaipan\\60-soft";
 //		String basedir = "J:\\kuaipan";
 //		String basedir = "G:\\迅雷下载";
-		if(args.length ==0 ) {
+		String basedir = "F:\\tmp\\信用卡流水";
+		
+		
+		if(args.length ==0) {
 			StringBuilder cmdNote = new StringBuilder();
 			cmdNote.append("please add a string as ananlyzed basedir.");
 			cmdNote.append('\n');
@@ -288,7 +297,7 @@ public class FileManager {
 			
 			System.out.println(cmdNote);
 		} else if(args.length == 2){
-			String basedir = args[0];
+			basedir = args[0];
 			String operation = args[1];
 			
 			if(OPR_CMD_ANANLYZE.equals(operation)) {
@@ -303,7 +312,7 @@ public class FileManager {
 			}
 		} else {
 			// 计算指定目录下的md5
-			String basedir = args[0];
+			basedir = args[0];
 			manager.ananlyze(basedir);
 		}
 	}

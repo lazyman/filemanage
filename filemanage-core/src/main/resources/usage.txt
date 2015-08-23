@@ -1,0 +1,22 @@
+建立用户
+create user rainbow PASSWORD 123456 admin;
+用户名=rainbow， 密码=123456，管理权限
+
+建表
+执行 dbscript.txt
+
+建立索引
+create index idx1 on FILEMANAGE (filepath)
+
+#######################
+# 统计重复的文件
+SELECT md5, count(1) FROM `filemanage`
+group by md5
+HAVING count(1) >1;
+
+create table filemanage_s as SELECT md5, count(1) FROM `filemanage` group by md5 HAVING COUNT(1)>1
+
+create table filemanage_t as SELECT s.* FROM `filemanage_s` t, filemanage s
+where t.md5 = s.md5
+
+SELECT * FROM `filemanage_t` order by `filesize` desc

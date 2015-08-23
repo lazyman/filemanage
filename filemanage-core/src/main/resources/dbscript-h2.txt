@@ -1,9 +1,0 @@
-建立用户
-create user rainbow PASSWORD 123456 admin;
-用户名=rainbow， 密码=123456，管理权限
-
-建表
-执行 filemanage-ddl.txt
-
-建立索引
-create index idx1 on FILEMANAGE (filepath)

@@ -10,13 +10,16 @@
 </head>
 <body>
 <%
+// 计算指定目录下的md5
+String basedir = "/volume1/homes/dch";
+//basedir = "D:/wiz/temp";
+//basedir = "D:/wiz";
+//basedir = request.getParameter("path");
+
 
 FileManager manager = new FileManager();
 
 manager.setRecordType(FileManager.RECORD_TYPE_DB);
-
-// 计算指定目录下的md5
-String basedir = "/volume1/homes/dch";
 manager.ananlyze(basedir);
 
 %>
