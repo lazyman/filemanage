@@ -8,7 +8,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-<a href="file.jsp">file</a>
-<a href="file-thread.jsp">file-thread-g</a>
+<p><a href="file.jsp">file</a></p>
+<p><a href="file-thread.jsp">file-thread-g</a></p>
 </body>
 </html>
