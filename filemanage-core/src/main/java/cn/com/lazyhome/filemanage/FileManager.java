@@ -72,7 +72,7 @@ public class FileManager {
 			fileInfo.setBasePath(basedir, fullPath);
 			String filepath = fileInfo.getPath();
 			
-			if(!hasAnalyzed(filepath, fullPath)) {
+			if(!hasAnalyzed(basedir, filepath, fullPath)) {
 				FileInfo fInfo = util.getMd5Digest(fullPath);
 				fInfo.setBasePath(basedir, fullPath);
 				
@@ -116,11 +116,12 @@ public class FileManager {
 	}
 	/**
 	 * 检查是否已经分析过：1.没分析的，2.已过期的。两种情况都认为是未分析。分析后未过期的，肯定存在记录，并且lastModified是最新的，也就是相等。
+	 * @param basedir 基础路径
 	 * @param filepath 相对文件路径
 	 * @param file 文件对象，用于取lastModified
 	 * @return 是否已经分析过或者是否过期
 	 */
-	private boolean hasAnalyzed(String filepath, File file) {
+	private boolean hasAnalyzed(String basedir, String filepath, File file) {
 		// TODO 检查是否已经分析过
 		
 		switch (recordType) {
@@ -143,6 +144,7 @@ public class FileManager {
 		try {
 			// 路径相同，分析时的lastModified比现在的lastModified小，说明分析后经过了修改，记录已过期得重新分析。
 			// 实际不可能出现出现分析时的lastModified比现在的lastModified大，最多相等
+//			String sql = "select * from filemanage where filepath = ? and basedir=? and lastModified = ?";
 			String sql = "select * from filemanage where filepath = ? and lastModified = ?";
 			
 			Connection conn = factory.getConnection();
@@ -150,6 +152,7 @@ public class FileManager {
 			
 			int parameterIndex=1;
 			prestmt.setString(parameterIndex++, filepath);
+//			prestmt.setString(parameterIndex++, basedir);
 			prestmt.setTimestamp(parameterIndex++, new Timestamp(file.lastModified()));
 			
 			ResultSet rs = prestmt.executeQuery();
