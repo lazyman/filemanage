@@ -222,7 +222,7 @@ public class FileManager {
 		UtilFactory factory = UtilFactory.getInstance();
 		try {
 			String sql = "insert into filemanage(filepath, md5, filesize, usetime,begintime, "
-					+ "endtime, recordtime, lastModified, fullpath, basePath) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					+ "endtime, recordtime, lastModified, basePath) values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			Connection conn = factory.getConnection();
 			PreparedStatement prestmt = conn.prepareStatement(sql);
@@ -236,7 +236,7 @@ public class FileManager {
 			prestmt.setTimestamp(parameterIndex++, new Timestamp(fInfo.getEndtime().getTime()) );
 			prestmt.setTimestamp(parameterIndex++, new Timestamp(System.currentTimeMillis()) );
 			prestmt.setTimestamp(parameterIndex++, new Timestamp(fInfo.getFile().lastModified()));
-			prestmt.setString(parameterIndex++, fInfo.getFullPath());
+//			prestmt.setString(parameterIndex++, fInfo.getFullPath());
 			prestmt.setString(parameterIndex++, fInfo.getBasePath());
 			prestmt.execute();
 			prestmt.close();
