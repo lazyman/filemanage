@@ -66,29 +66,33 @@ public class FileManager {
 		
 		ArrayList<FileInfo> filelist = new ArrayList<FileInfo>();
 		
-		if(fullPath.isFile()) {
-			FileInfo fileInfo = new FileInfo();
-			// 为了获取相对的 filepath
-			fileInfo.setBasePath(basedir, fullPath);
-			String filepath = fileInfo.getPath();
-			
-			if(!hasAnalyzed(basedir, filepath, fullPath)) {
-				FileInfo fInfo = util.getMd5Digest(fullPath);
-				fInfo.setBasePath(basedir, fullPath);
+		// 检测文件路径是否存在，权限是否足够，否则可能出现子目录无法获取的情况。
+		if(fullPath.exists()) {
+			if(fullPath.isFile()) {
+				FileInfo fileInfo = new FileInfo();
+				// 为了获取相对的 filepath
+				fileInfo.setBasePath(basedir, fullPath);
+				String filepath = fileInfo.getPath();
 				
-				record(fInfo);
-				filelist.add(fInfo);
+				if(!hasAnalyzed(basedir, filepath, fullPath)) {
+					FileInfo fInfo = util.getMd5Digest(fullPath);
+					fInfo.setBasePath(basedir, fullPath);
+					
+					record(fInfo);
+					filelist.add(fInfo);
+				}
+			} else if(fullPath.isDirectory()) {
+				// 递归分析子目录
+				logger.trace("path is directory");
+				File[] dirs = fullPath.listFiles();
+				
+				// 文件不存在或没权限时，dirs为null。已使用exists判断过，dirs肯定是>=0
+				for(int i=0; i<dirs.length; i++) {
+					filelist.addAll(ananlyze(basedir, dirs[i]));
+				}
 			}
-		} else if(fullPath.isDirectory()) {
-			// 递归分析子目录
-			logger.trace("path is directory");
-			File[] dirs = fullPath.listFiles();
-			
-			for(int i=0; i<dirs.length; i++) {
-				filelist.addAll(ananlyze(basedir, dirs[i]));
-			}
-		} else {
-			logger.warn("fullPath is not a file or directory:" + fullPath);
+		}else {
+			logger.warn("fullPath is not exists:" + fullPath);
 		}
 		
 		return filelist;
