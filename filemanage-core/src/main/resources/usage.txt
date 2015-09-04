@@ -1,4 +1,4 @@
-建立用户
+﻿建立用户
 create user rainbow PASSWORD 123456 admin;
 用户名=rainbow， 密码=123456，管理权限
 
@@ -6,7 +6,8 @@ create user rainbow PASSWORD 123456 admin;
 执行 dbscript.txt
 
 建立索引
-create index idx1 on FILEMANAGE (filepath)
+create index filemanage_path on FILEMANAGE (filepath， lastModified)
+ALTER TABLE `rainbow`.`filemanage` DROP INDEX `filemanage_path`, ADD UNIQUE `filemanage_path` (`filepath`, `lastModified`) COMMENT 'path';
 
 #######################
 # 统计重复的文件
@@ -20,3 +21,20 @@ create table filemanage_t as SELECT s.* FROM `filemanage_s` t, filemanage s
 where t.md5 = s.md5
 
 SELECT * FROM `filemanage_t` order by `filesize` desc
+
+
+
+###########
+# 统计各个目录的存储文件数量和大小
+SELECT substr(filepath, 1, 2), count(1), sum(filesize)/1024/1024/1024 FROM `filemanage`
+group by substr(filepath, 1, 2)
+
+########## 统计重复的文件
+SELECT * FROM `filemanage`
+where md5 in (
+    SELECT md5 FROM `filemanage`
+    where filesize > 1000*1024*1024
+    group by md5
+    having count(1)>1
+)
+order by md5,filesize
