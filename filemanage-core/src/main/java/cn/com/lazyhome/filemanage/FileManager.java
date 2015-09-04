@@ -11,14 +11,17 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.zjtlcb.aml.util.SecurityUtil;
 import com.zjtlcb.aml.util.UtilFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FileManager {
-	private static Log logger = LogFactory.getLog(FileManager.class);
+//	private static Log logger = LogFactory.getLog(FileManager.class);
+	//import org.slf4j.Logger;
+	//import org.slf4j.LoggerFactory;
+	private static final Logger logger = LoggerFactory.getLogger(FileManager.class);
 	
 	public final static int RECORD_TYPE_MEMERY = 0;
 	public final static int RECORD_TYPE_FILE = 1;
@@ -34,11 +37,20 @@ public class FileManager {
 	private int recordType;
 	
 	/**
+	 * 被排除的文件夹，分析文件时直接跳过
+	 */
+	private static final List<String> ignoreDirs =new ArrayList<String>();
+	static {
+		// dsm中的回收站文件夹
+		ignoreDirs.add("#recycle");
+	}
+	
+	/**
 	 * 分析目录
 	 * @param basedir 基础目录
 	 */
 	public void ananlyze(String basedir) {
-		logger.info("针对basedir=" + basedir + "启动分析程序！！");
+		logger.info("针对basedir={}启动分析程序！！", basedir);
 		File path = new File(basedir);
 		
 		List<FileInfo> list = ananlyze(basedir, path);
@@ -49,25 +61,25 @@ public class FileManager {
 //			}
 //		}
 		
-		logger.info("分析程序结束，经过分析的文件数量：" + list.size());
+		logger.info("分析程序结束，经过分析的文件数量：{}", list.size());
 	}
 	
 	/**
 	 * 分析目录或文件-全路径
-	 * <p>文件，计算MD5，并将结果写入数据库
+	 * <p>文件，计算MD5，并将结果写入数据库，将会排除#recycle文件夹的分析
 	 * @param path
 	 * @return 
 	 */
 	public List<FileInfo> ananlyze(String basedir, File fullPath) {
 		SecurityUtil util = new SecurityUtil();
-		if(logger.isTraceEnabled()) {
-			logger.trace("分析文件：" + fullPath.toString());
-		}
+		logger.debug("分析文件：{}", fullPath.getAbsolutePath());
 		
 		ArrayList<FileInfo> filelist = new ArrayList<FileInfo>();
-		
+
+		String filename = fullPath.getName();
 		// 检测文件路径是否存在，权限是否足够，否则可能出现子目录无法获取的情况。
-		if(fullPath.exists()) {
+		// 并且不是排除的文件
+		if(fullPath.exists() && !ignoreDirs.contains(filename)) {
 			if(fullPath.isFile()) {
 				FileInfo fileInfo = new FileInfo();
 				// 为了获取相对的 filepath
@@ -86,13 +98,18 @@ public class FileManager {
 				logger.trace("path is directory");
 				File[] dirs = fullPath.listFiles();
 				
-				// 文件不存在或没权限时，dirs为null。已使用exists判断过，dirs肯定是>=0
-				for(int i=0; i<dirs.length; i++) {
-					filelist.addAll(ananlyze(basedir, dirs[i]));
+				// 文件不存在或没权限时，dirs为null。
+				// exists无法判断是否有权限
+				if(dirs != null) {
+					for(int i=0; i<dirs.length; i++) {
+						filelist.addAll(ananlyze(basedir, dirs[i]));
+					}
+				} else {
+					logger.warn("the path maybe have NO permission to access -- {}", fullPath);
 				}
 			}
 		}else {
-			logger.warn("fullPath is not exists:" + fullPath);
+			logger.warn("the path is not exists -- {}", fullPath);
 		}
 		
 		return filelist;
@@ -112,9 +129,9 @@ public class FileManager {
 		} else {
 			File[] dirs = path.listFiles();
 			
-			logger.info("dir count:" + dirs.length);
+			logger.info("dir count:{}", dirs.length);
 			for(int i=0; i<dirs.length; i++) {
-				logger.info(dirs[i]);
+				logger.info(dirs[i].toString());
 			}
 		}
 	}
@@ -176,6 +193,7 @@ public class FileManager {
 
 	/**
 	 * 记录分析结果，可以是内存变量、数据库、文件系统
+	 * filepath和lastModified组成唯一索引，因此可能存在多条相同filepath的记录
 	 * @param fInfo
 	 */
 	private void record(FileInfo fInfo) {
@@ -190,7 +208,7 @@ public class FileManager {
 			break;
 			
 		case RECORD_TYPE_MEMERY:
-			logger.info(fInfo);
+			logger.info(fInfo.toString());
 			break;
 
 		default:
@@ -227,11 +245,12 @@ public class FileManager {
 	private void saveToDb(FileInfo fInfo) {
 		// TODO 保存信息到数据库
 		UtilFactory factory = UtilFactory.getInstance();
+		String sql = "insert into filemanage(filepath, md5, filesize, usetime,begintime, "
+				+ "endtime, recordtime, lastModified, basePath) values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		Connection conn = null;
 		try {
-			String sql = "insert into filemanage(filepath, md5, filesize, usetime,begintime, "
-					+ "endtime, recordtime, lastModified, basePath) values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			
-			Connection conn = factory.getConnection();
+			conn = factory.getConnection();
 			PreparedStatement prestmt = conn.prepareStatement(sql);
 			
 			int parameterIndex=1;
@@ -246,11 +265,18 @@ public class FileManager {
 //			prestmt.setString(parameterIndex++, fInfo.getFullPath());
 			prestmt.setString(parameterIndex++, fInfo.getBasePath());
 			prestmt.execute();
-			prestmt.close();
 			
-			conn.close();
+			prestmt.close();
 		} catch (SQLException e) {
-			logger.error("记录统计数据", e);
+			logger.error("记录统计数据,sql:{}, fInfo:{}", sql, fInfo, e);
+		} finally {
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				logger.error("关闭数据库连接", e);
+			}
 		}
 	}
 
